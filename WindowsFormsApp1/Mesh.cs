@@ -13,7 +13,6 @@ namespace WindowsFormsApp1
         public List<Polygon> shownfaces; //去除消隐的面
         public List<Triangle> trianglefaces;  //要显示的三角形的集合
         
-
         /// <summary>
         /// 在调用之前必须先初始化第二个参数 faces 先得出所有面的信息 根据你的模型来设定三角面
         /// </summary>

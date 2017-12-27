@@ -48,7 +48,7 @@ namespace WindowsFormsApp1
         }
         
 
-
+        //这个不行
         /// <summary>
         /// 顶点坐标系变换算法 vector = offset 
         /// </summary>
@@ -81,8 +81,6 @@ namespace WindowsFormsApp1
             mat3[1, 0] = (mat[0, 1] * mat[2, 2] - mat[0, 2] * mat[2, 1]) / ny2nz2;
             mat3[0, 1] = -mat[1, 0];
             mat3[2, 2] = 1;
-
-            
             //Matrix mat4 = offset * mat1 * mat2 * mat3;
             for (int i = 0; i < mesh.vertices.Count; i++)
             {
@@ -221,10 +219,7 @@ namespace WindowsFormsApp1
             return ret;
         }
 
-        public static void UpdateMatrix()
-        {
-
-        }
+        
 
         
         public static double MaxNumber(double one,double two)

@@ -71,6 +71,16 @@ namespace WindowsFormsApp1
             ret.WorldPos = Vector.Interp(v1.WorldPos, v2.WorldPos, t);
             return ret;
         }
+        public Vertex Interp(Vertex offset, double t)
+        {
+            this.point = Vector.Interp(this.point, offset.point, t);
+            this.u = this.u + offset.u * t;
+            this.v = this.v + offset.v * t;
+            this.normal = Vector.Interp(this.normal, offset.normal, t);
+            this.color = MyColor.Interp(this.color, offset.color, t);
+            this.WorldPos = Vector.Interp(this.WorldPos, offset.WorldPos, t);
+            return this;
+        }
 
         /// <summary>
         /// 当前顶点值加上step

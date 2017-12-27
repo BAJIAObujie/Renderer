@@ -28,6 +28,7 @@ namespace WindowsFormsApp1
         private bool IsEye;
         private bool IsCube;
         private bool IsPointLight;
+        //private bool IsPerspective;
 
 
         private Vector eye;
@@ -189,20 +190,117 @@ namespace WindowsFormsApp1
             }
             
         }
-        /*
-        private void FrustumCullOff(Verx v1, Vertex v2, Vertex v3)
+
+        //视椎体裁剪功能未完成
+        private bool FrustumCullOff(Vertex v1,Vertex v2,Vertex v3)
         {
-            int state;
+            
+            int State_1x, State_2x, State_3x;
+            int State_1y, State_2y, State_3y;
+            int State_1z, State_2z, State_3z;
 
+            //------------判断x轴-------------
+            if (v1.point.x > 1) State_1x = 2;
+            else if (v1.point.x < -1) State_1x = 1;
+            else State_1x = 0;
 
-            if()
+            if (v2.point.x > 1) State_2x = 2;
+            else if (v2.point.x < -1) State_2x = 1;
+            else State_2x = 0;
 
+            if (v3.point.x > 1) State_3x = 2;
+            else if (v3.point.x < -1) State_3x = 1;
+            else State_3x = 0;
 
+            if ((State_1x == 2) && (State_2x == 2) && (State_3x == 2)) return false;
+            if ((State_1x == 1) && (State_2x == 1) && (State_3x == 1)) return false;
+
+            //------------判断y轴-------------
+            if (v1.point.y > 1) State_1y = 2;
+            else if (v1.point.y < -1) State_1y = 1;
+            else State_1y = 0;
+
+            if (v2.point.y > 1) State_2y = 2;
+            else if (v2.point.y < -1) State_2y = 1;
+            else State_2y = 0;
+
+            if (v3.point.y > 1) State_3y = 2;
+            else if (v3.point.y < -1) State_3y = 1;
+            else State_3y = 0;
+
+            if ((State_1y == 2) && (State_2y == 2) && (State_3y == 2)) return false;//完全不可见状态
+            if ((State_1y == 1) && (State_2y == 1) && (State_3y == 1)) return false;
+
+            //------------判断z轴-------------
+            int num_verts_in = 0;
+            if (v1.point.z > 1) State_1z = 2;
+            else if (v1.point.z < 0) State_1z = 1;
+            else
+            {
+                State_1z = 0; num_verts_in++;
+            }
+
+            if (v2.point.z > 1) State_2z = 2;
+            else if (v2.point.z < 0) State_2z = 1;
+            else
+            {
+                State_2z = 0; num_verts_in++;
+            }
+
+            if (v3.point.z > 1) State_3z = 2;
+            else if (v3.point.z < 0) State_3z = 1;
+            else
+            {
+                State_3z = 0; num_verts_in++;
+            }
+
+            if ((State_1z == 2) && (State_2z == 2) && (State_3z == 2)) return false;
+            if ((State_1z == 1) && (State_2z == 1) && (State_3z == 1)) return false;
+
+            return true;
+            // 判断是否有顶点在近裁剪面外侧
+            if (State_1z == 1 || State_2z == 1 || State_3z == 1)
+            {
+
+                //考虑的情况不完善
+                if(num_verts_in == 1)//两点在外侧
+                {
+                    if (State_1z == 0) { }
+                    else if (State_2z == 0)
+                    {
+                        Vertex temp = v1;
+                        v1 = v2;
+                        v2 = v3;
+                        v3 = temp;
+                    }
+                    else
+                    {
+                        Vertex temp = v1;
+                        v1 = v3;
+                        v3 = v2;
+                        v2 = temp;
+                    }
+                    double t = (0 - v1.point.z) / (v2.point.z - v1.point.z);
+                    v2 = Vertex.Interp(v1, v2, t);   //这样计算完以后的v2.point.z应该也为0
+                    /*
+                    double xi = v1.point.x + v.x * t1;
+                    double yi = v1.point.y + v.y * t1;
+                    v2.point.x = xi;
+                    v2.point.y = yi;
+                    v2.point.z = 0;
+                    */
+                    t = (0 - v1.point.z) / (v3.point.z - v1.point.z);
+                    v3 = Vertex.Interp(v1, v3, t);
+                }
+                else if(num_verts_in == 2)
+                {
+
+                }
+
+               
+            }
 
         }
-        */
-
-
 
         private void DrawPrimitive(Vertex v1, Vertex v2, Vertex v3, Vertex v4)
         {
@@ -655,6 +753,6 @@ namespace WindowsFormsApp1
             UpdateMyPictureBox();
         }
 
-        
+
     }
 }

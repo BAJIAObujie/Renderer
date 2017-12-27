@@ -117,6 +117,8 @@ namespace WindowsFormsApp1
             ret.t = v1.t + (v2.t - v1.t) * t;
             return ret;
         }
+        
+
         /// <summary>
         /// Inverse x y z
         /// </summary>
