@@ -103,6 +103,16 @@ namespace WindowsFormsApp1
             return ret;
         }
 
+        public static Vector operator /(Vector v, double t)
+        {
+            Vector ret = new Vector();
+            ret.x = v.x / t;
+            ret.y = v.y / t;
+            ret.z = v.z / t;
+            //ret.t = v.t / t;
+            return ret;
+        }
+
         public static double DotMultiply(Vector lhs, Vector rhs)
         {
             return (lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z);

@@ -12,7 +12,8 @@ namespace WindowsFormsApp1
         public List<Polygon> faces;   //面的集合
         public List<Polygon> shownfaces; //去除消隐的面
         public List<Triangle> trianglefaces;  //要显示的三角形的集合
-        
+
+        public Vector CubeCenter;
         /// <summary>
         /// 在调用之前必须先初始化第二个参数 faces 先得出所有面的信息 根据你的模型来设定三角面
         /// </summary>
@@ -43,10 +44,12 @@ namespace WindowsFormsApp1
                 new Polygon(0,2,6,4),
             };
             init();
+            
+            CubeCenter = (this.vertices[0].point + this.vertices[7].point)/2;
         }
         private void init()
         {
-            int mul = 2;
+            double mul = 1.5;
             for (int i = 0; i < this.vertices.Count; i++)
             {
                 this.vertices[i].point.x *= mul;
@@ -57,7 +60,16 @@ namespace WindowsFormsApp1
                 this.vertices[i].WorldPos.z *= mul;
             }
             
-            
+            for (int i = 0; i < this.vertices.Count; i++)
+            {
+                this.vertices[i].point.x -= 50;
+                this.vertices[i].point.y -= 50;
+                this.vertices[i].point.z -= 50;
+                this.vertices[i].WorldPos.x -= 50;
+                this.vertices[i].WorldPos.y -= 50;
+                this.vertices[i].WorldPos.z -= 50;
+            }
+
 
         }
         public void Move(Vector m)

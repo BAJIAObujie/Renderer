@@ -45,6 +45,7 @@ namespace WindowsFormsApp1
         private int TextureImageWidth;
         private int TextureImageHeight;
         private MyColor[,] TextureImage;
+        private double[,] DepthBuffer;
 
 
         //------------Form构造函数---------
@@ -76,20 +77,21 @@ namespace WindowsFormsApp1
 
             //------------初始化顶点、面数据-----------
             this.mesh = new Mesh();
-
+            DepthBuffer = new double[this.BitMapHeight, this.BitMapWidth];
+            ClearDepthBuffer();
             //------------摄像机位置  旋转角度  基矩阵---------------------
-            this.eye = new Vector(350, 350, -50, 1); //摄像机位置
+            this.eye = new Vector(200, 200, 200, 1); //摄像机位置
             //this.eye = new Vector(450, 150, 150, 1); //摄像机位置
-            this.lookat = new Vector(0, 0, 300, 1); //默认看向的世界坐标
+            this.lookat = new Vector(0, 0, 0, 1); //默认看向的世界坐标
 
             //this.IsWireFrame = true;
             this.IsTriangleWireFrame = false;
             this.IsPointLighting = true;
 
             //------------加载纹理---------------------
-            OpenFileDialog o = new OpenFileDialog();
-            o.ShowDialog();
-            this.TexturePath = o.FileName;
+            //OpenFileDialog o = new OpenFileDialog();
+            //o.ShowDialog();
+            //this.TexturePath = o.FileName;
             LoadTexture();
 
 
@@ -136,15 +138,37 @@ namespace WindowsFormsApp1
         /// </summary>
         /// <param name="vertexlist"></param>
         /// <param name="showntrianglefaces"></param>
+        private bool issingle = true;
         private void DrawAllRect(List<Vertex> vertexlist, List<Triangle> showntrianglefaces)
         {
             for(int i = 0; i < showntrianglefaces.Count; i++)
-            //for (int i = 0; i < 6; i++)
+            //for (int i = 0; i < 1; i++)
             {
+                if (issingle)
+                {
+                    vertexlist[showntrianglefaces[i].p0index].u = 0;
+                    vertexlist[showntrianglefaces[i].p0index].v = 0;
+                    vertexlist[showntrianglefaces[i].p1index].u = 0;
+                    vertexlist[showntrianglefaces[i].p1index].v = 1;
+                    vertexlist[showntrianglefaces[i].p2index].u = 1;
+                    vertexlist[showntrianglefaces[i].p2index].v = 1;
+                    issingle = !issingle;
+                }
+                else
+                {
+                    vertexlist[showntrianglefaces[i].p0index].u = 0;
+                    vertexlist[showntrianglefaces[i].p0index].v = 0;
+                    vertexlist[showntrianglefaces[i].p1index].u = 1;
+                    vertexlist[showntrianglefaces[i].p1index].v = 1;
+                    vertexlist[showntrianglefaces[i].p2index].u = 1;
+                    vertexlist[showntrianglefaces[i].p2index].v = 0;
+                    issingle = !issingle;
+                }
                 //之前用静态方法改变了顶点列表里的内容，所以画第二个三角形的时候，重复用到的数据p0index数据出错，注意是引用类型
                 DrawPrimitive(vertexlist[showntrianglefaces[i].p0index],
                     vertexlist[showntrianglefaces[i].p1index],
                     vertexlist[showntrianglefaces[i].p2index]);
+
                 /*
                 DrawPrimitive(vertexlist[polygonlist[i].p0index], 
                     vertexlist[polygonlist[i].p2index],
@@ -163,10 +187,6 @@ namespace WindowsFormsApp1
             Vector v8 = v5 * Projection;
             Vector v9 = v6 * Projection;
 
-            v7.ChangeTtoOne();
-            v8.ChangeTtoOne();
-            v9.ChangeTtoOne();
-
             Vector p1 = MyStaticMethod.TransformHomogenize(this.BitMapWidth, this.BitMapHeight, v7);
             Vector p2 = MyStaticMethod.TransformHomogenize(this.BitMapWidth, this.BitMapHeight, v8);
             Vector p3 = MyStaticMethod.TransformHomogenize(this.BitMapWidth, this.BitMapHeight, v9);
@@ -178,13 +198,15 @@ namespace WindowsFormsApp1
                 //保存了世界坐标系下的法向量
                 Vertex v11 = new Vertex(v1);
                 v11.point = new Vector(p1);
-                //v11.point.t = v7.t;
+                v11.point.t = v7.t;
 
                 Vertex v22 = new Vertex(v2);
                 v22.point = new Vector(p2);
+                v22.point.t = v8.t;
 
                 Vertex v33 = new Vertex(v3);
                 v33.point = new Vector(p3);
+                v33.point.t = v9.t;
 
                 DrawTriangle_Texture(v11,v22,v33);
             }
@@ -421,11 +443,11 @@ namespace WindowsFormsApp1
             if (left.point.x >= right.point.x) ret.width = 0;
 
             //计算步长
-            double rate = (double)1 / width;
+            double rate = 1.0 / width;
             ret.step.point.x = (right.point.x - left.point.x) * rate;
             ret.step.point.y = (right.point.y - left.point.y) * rate;
             ret.step.point.z = (right.point.z - left.point.z) * rate;
-            ret.step.point.t = (right.point.x - left.point.t) * rate;
+            ret.step.point.t = (right.point.t - left.point.t) * rate;
             ret.step.u = (right.u - left.u) * rate;
             ret.step.v = (right.v - left.v) * rate;
             ret.step.color.r = (right.color.r - left.color.r) * rate;
@@ -452,7 +474,6 @@ namespace WindowsFormsApp1
 
         private void StartRenderLine(ScanLine scanline)
         {
-            //尚未加入深度缓存
             int x = scanline.x;
             int width = scanline.width;
             if ((x + width) < 0) return;
@@ -460,21 +481,26 @@ namespace WindowsFormsApp1
             {
                 if(x >= 0 && x < BitMapWidth)
                 {
-                    //double u = scanline.leftvertex.u * scanline.width;
-                    //double v = scanline.leftvertex.v * scanline.width;
-                    double u = scanline.leftvertex.u;
-                    double v = scanline.leftvertex.v;
+                    //深度缓存
+                    if(scanline.leftvertex.point.t < DepthBuffer[scanline.y, x])
+                    {
+                        DepthBuffer[scanline.y, x] = scanline.leftvertex.point.t;
 
-                    MyColor mycolor = ReadTexture(u, v); //根据uv读取颜色
+                        double u = scanline.leftvertex.u;
+                        double v = scanline.leftvertex.v;
 
-                    FragmentShader FS = new FragmentShader(scanline.leftvertex.WorldPos,
-                                                           scanline.leftvertex.normal,
-                                                           this.eye);
-                    mycolor = MyStaticMethod.LightMode_BlinnPhong(FS, mycolor, IsTexture, IsPointLighting);
+                        MyColor mycolor = ReadTexture(u, v); //根据uv读取颜色   非立方体纹理映射
+                        //MyColor mycolor = CubeMap(scanline.leftvertex.WorldPos, this.mesh.CubeCenter);
 
+                        FragmentShader FS = new FragmentShader(scanline.leftvertex.WorldPos,
+                                                               scanline.leftvertex.normal,
+                                                               this.eye);
+                        mycolor = MyStaticMethod.LightMode_BlinnPhong(FS, mycolor, IsTexture, IsPointLighting);
 
-                    Color color = mycolor.ConvertToColor();
-                    MyBitMap.SetPixel(x, scanline.y, color);  //设置对应像素点颜色
+                        Color color = mycolor.ConvertToColor();
+                        MyBitMap.SetPixel(x, scanline.y, color);  //设置对应像素点颜色
+                    }
+                    
                 }
                 scanline.leftvertex.NextStep(scanline.step);
                 if (x > BitMapWidth) break;
@@ -487,8 +513,8 @@ namespace WindowsFormsApp1
 
         private void LoadTexture()
         {
-            //Image img = Image.FromFile(@"C:\Users\ZL0032\Desktop\Document\Journey.jpg");
-            Image img = Image.FromFile(TexturePath);
+            Image img = Image.FromFile(@"C:\Users\ZL0032\Desktop\Document\Journey.jpg");
+            //Image img = Image.FromFile(TexturePath);
             Bitmap bm = new Bitmap(img);
             this.TextureImageHeight = bm.Height;
             this.TextureImageWidth = bm.Width;
@@ -505,6 +531,62 @@ namespace WindowsFormsApp1
                 }
             }
         }
+
+        private MyColor CubeMap(Vector WorldPos, Vector CubeCenter)
+        {
+            
+            Vector vec = WorldPos - CubeCenter;
+            double u, v;
+            vec.NormalizedVector();
+            //positive x
+            if( (vec.x > vec.y) && (vec.x > vec.z))
+            {
+                u = 0.5 - (vec.z / (2 * vec.x));
+                v = 0.5 - (vec.y / (2 * vec.x));
+            }
+
+            //negative x
+            else if ((vec.x < vec.y) && (vec.x < vec.z))
+            {
+                u = 0.5 - (vec.z / (2 * vec.x));
+                v = 0.5 + (vec.y / (2 * vec.x));
+            }
+
+            //positive y
+            else if ((vec.y > vec.x) && (vec.y > vec.z))
+            {
+                u = 0.5 + (vec.x / (2 * vec.y));
+                v = 0.5 + (vec.z / (2 * vec.y));
+            }
+
+            //negative y
+            else if ((vec.y < vec.x) && (vec.y < vec.z))
+            {
+                u = 0.5 - (vec.x / (2 * vec.y));
+                v = 0.5 + (vec.z / (2 * vec.y));
+            }
+
+            //positive z
+            else if ((vec.z > vec.x) && (vec.z > vec.y))
+            {
+                u = 0.5 + (vec.x / (2 * vec.z));
+                v = 0.5 - (vec.y / (2 * vec.z));
+            }
+
+            //negative z
+            else if ((vec.z < vec.x) && (vec.z < vec.y))
+            {
+                u = 0.5 + (vec.x / (2 * vec.z));
+                v = 0.5 + (vec.y / (2 * vec.z));
+            }
+            else
+            {
+                u = v = 1;
+            }
+            return ReadTexture(u, v);
+            
+        }
+
         private MyColor ReadTexture(double u, double v)
         {
             u = u * (TextureImageWidth - 1);
@@ -514,6 +596,16 @@ namespace WindowsFormsApp1
             x = MyStaticMethod.CMID(x, 0, TextureImageWidth - 1);
             y = MyStaticMethod.CMID(y, 0, TextureImageHeight - 1);
             return TextureImage[TextureImageHeight - 1 - y, x];
+        }
+        private void ClearDepthBuffer()
+        {
+            for (int y = 0; y < this.BitMapHeight; y++)
+            {
+                for (int x = 0; x < this.BitMapWidth; x++)
+                {
+                    DepthBuffer[y, x] = 1000000;
+                }
+            }
         }
         private void ClearPictureBox()
         {
@@ -602,18 +694,26 @@ namespace WindowsFormsApp1
             OpenFileDialog o = new OpenFileDialog();
             o.ShowDialog();
             this.TexturePath = o.FileName;
+            ClearDepthBuffer();
             UpdateMyPictureBox();
         }
 
         private void Button_CameraMove_Click(object sender, EventArgs e)
         {
-            
+            //mesh.Move(new Vector(-mesh.CubeCenter.x, -mesh.CubeCenter.y, -mesh.CubeCenter.z,1));
+            MyStaticMethod.RotateYAroundPoint(mesh, new Vector(0, 0, 0, 1), 0.1);
+            //mesh.Move(mesh.CubeCenter);
+            ClearDepthBuffer();
+            ClearPictureBox();
+            UpdateMatrix();
+            UpdateMyPictureBox();
         }
 
         private void CheckBox_IsTriangleWireFrame_CheckedChanged(object sender, EventArgs e)
         {
             if (CheckBox_IsTriangleWireFrame.Checked == true) this.IsTriangleWireFrame = true;
             else this.IsTriangleWireFrame = false;
+            ClearDepthBuffer();
             ClearPictureBox();
             UpdateMyPictureBox();
         }
@@ -622,6 +722,7 @@ namespace WindowsFormsApp1
         {
             if (CheckBox_IsRectWireFrame.Checked == true) this.IsRectWireFrame = true;
             else this.IsRectWireFrame = false;
+            ClearDepthBuffer();
             ClearPictureBox();
             UpdateMyPictureBox();
         }
@@ -630,6 +731,7 @@ namespace WindowsFormsApp1
         {
             if (CheckBox_IsTexture.Checked == true) this.IsTexture = true;
             else this.IsTexture = false;
+            ClearDepthBuffer();
             ClearPictureBox();
             UpdateMyPictureBox();
         }
@@ -638,6 +740,7 @@ namespace WindowsFormsApp1
         {
             if (CheckBox_IsLighting.Checked == true) this.IsPointLighting = true;
             else this.IsPointLighting = false;
+            ClearDepthBuffer();
             ClearPictureBox();
             UpdateMyPictureBox();
         }
@@ -647,6 +750,7 @@ namespace WindowsFormsApp1
             MyStaticMethod.EnvironmentLight.r = ((double)EnvironmentLightScroll.Value) / 10;
             MyStaticMethod.EnvironmentLight.g = ((double)EnvironmentLightScroll.Value) / 10;
             MyStaticMethod.EnvironmentLight.b = ((double)EnvironmentLightScroll.Value) / 10;
+            ClearDepthBuffer();
             ClearPictureBox();
             UpdateMyPictureBox();
         }
@@ -721,6 +825,7 @@ namespace WindowsFormsApp1
             if (IsEye) this.eye += new Vector(0, 25, 0, 1);
             else if (IsCube)    mesh.Move(new Vector(0, 25, 0, 1));  
             else if (IsPointLight)   MyStaticMethod.PointLight.LightPos += new Vector(0, 25, 0, 1);
+            ClearDepthBuffer();
             ClearPictureBox();
             UpdateMatrix();
             UpdateMyPictureBox();
@@ -730,6 +835,7 @@ namespace WindowsFormsApp1
             if (IsEye) this.eye -= new Vector(0, 25, 0, 1);
             else if (IsCube) mesh.Move(new Vector(0, -25, 0, 1));
             else if (IsPointLight) MyStaticMethod.PointLight.LightPos -= new Vector(0, 25, 0, 1);
+            ClearDepthBuffer();
             ClearPictureBox();
             UpdateMatrix();
             UpdateMyPictureBox();
@@ -739,6 +845,7 @@ namespace WindowsFormsApp1
             if (IsEye) this.eye += new Vector(0, 0, -25, 1);
             else if (IsCube) mesh.Move(new Vector(0, 0, -25, 1));
             else if (IsPointLight) MyStaticMethod.PointLight.LightPos += new Vector(0, 0, -25, 1);
+            ClearDepthBuffer();
             ClearPictureBox();
             UpdateMatrix();
             UpdateMyPictureBox();
@@ -748,6 +855,7 @@ namespace WindowsFormsApp1
             if (IsEye) this.eye += new Vector(0, 0, 25, 1);
             else if (IsCube) mesh.Move(new Vector(0, 0, 25, 1));
             else if (IsPointLight) MyStaticMethod.PointLight.LightPos += new Vector(0, 0, 25, 1);
+            ClearDepthBuffer();
             ClearPictureBox();
             UpdateMatrix();
             UpdateMyPictureBox();

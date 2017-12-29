@@ -90,6 +90,22 @@ namespace WindowsFormsApp1
 
         }
 
+
+        public static void RotateYAroundPoint(Mesh mesh, Vector point, double theta)
+        {
+            double AngleSin = Math.Sin(theta);
+            double AngleCos = Math.Cos(theta);
+            Matrix rotate = new Matrix();
+            rotate[1, 1] = 1;
+            rotate[0, 0] = rotate[2, 2] = AngleCos;
+            rotate[0, 2] = rotate[2, 0] = AngleSin;
+            rotate[0, 2] = -rotate[0, 2];
+            for (int i = 0; i < mesh.vertices.Count; i++)
+            {
+                Vector vec = mesh.vertices[i].point - point;
+                mesh.vertices[i].point = vec * rotate;
+            }
+        }
         /// <summary>
         /// 从多边形面中获得法向量
         /// </summary>
@@ -208,14 +224,12 @@ namespace WindowsFormsApp1
         public static Vector TransformHomogenize(int Width,int Height, Vector p)
         {
             Vector ret = new Vector();//0 0 0 1
-            //double rhw = 1.0 / Width;
-            double rhw = 1;
+            double rhw = 1.0 / p.t;
+            //此时p.t为投影变换后的z值，p实际上为（xz',yz',zz',z'） 同时除以t之后才是正确的投影变换 不要'的是投影空间，四方体里的,带‘的是
             ret.x = (p.x * rhw + 1.0) * Width * 0.5;
             ret.y = (1.0 - p.y * rhw) * Height * 0.5;
-            ret.z = p.z * rhw;
-
-                
-            ret.t = 1.0;
+            ret.z = p.z * rhw; 
+            ret.t = 1.0;//可以不要这一句 重复
             return ret;
         }
 

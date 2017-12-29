@@ -64,6 +64,7 @@ namespace WindowsFormsApp1
         {
             Vertex ret = new Vertex();
             ret.point = Vector.Interp(v1.point, v2.point, t);
+            //ret.point.t = v1.point.t + (v2.point.t - v1.point.t) * t;
             ret.u = v1.u + (v2.u - v1.u) * t;
             ret.v = v1.v + (v2.v - v1.v) * t;
             ret.normal = Vector.Interp(v1.normal, v2.normal, t);
@@ -90,6 +91,7 @@ namespace WindowsFormsApp1
         public Vertex NextStep(Vertex step)
         {
             this.point += step.point;
+            this.point.t += step.point.t;
             this.u += step.u;
             this.v += step.v;
             this.normal += step.normal;
