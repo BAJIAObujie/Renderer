@@ -9,7 +9,7 @@ namespace WindowsFormsApp1
     class Vertex
     {
         public Vector point;
-        public double u, v;
+        public UV uv;
         public Vector normal;
         public MyColor color;
         public Vector WorldPos;
@@ -17,20 +17,23 @@ namespace WindowsFormsApp1
         /// <summary>
         /// 向量 uv 颜色全部为0，除了向量的t
         /// </summary>
+        /// 
+        
         public Vertex()
         {
             this.point = new Vector();
-            this.u = 0;
-            this.v = 0;
+            this.uv.u = 0;
+            this.uv.v = 0;
             this.normal = new Vector();
             this.color = new MyColor();
             this.WorldPos = new Vector();
         }
-        public Vertex(double x,double y,double z,double t,double u,double v)
+        
+        public Vertex(double x,double y,double z,double t,UV uv)
         {
             this.point = new Vector(x,y,z,t);
-            this.u = u;
-            this.v = v;
+            this.uv.u = uv.u;
+            this.uv.v = uv.v;
             this.normal = new Vector();
             this.color = new MyColor();
             this.WorldPos = new Vector(x, y, z, t);
@@ -54,8 +57,8 @@ namespace WindowsFormsApp1
         public Vertex(Vertex copy)
         {
             this.point = new Vector(copy.point.x, copy.point.y, copy.point.z, copy.point.t);
-            this.u = copy.u;
-            this.v = copy.v;
+            this.uv.u = copy.uv.u;
+            this.uv.v = copy.uv.v;
             this.normal = new Vector(copy.normal.x, copy.normal.y, copy.normal.z, copy.normal.t);
             this.color = new MyColor(copy.color.r, copy.color.g, copy.color.b);
             this.WorldPos = new Vector(copy.WorldPos.x, copy.WorldPos.y, copy.WorldPos.z, copy.WorldPos.t);
@@ -65,8 +68,8 @@ namespace WindowsFormsApp1
             Vertex ret = new Vertex();
             ret.point = Vector.Interp(v1.point, v2.point, t);
             //ret.point.t = v1.point.t + (v2.point.t - v1.point.t) * t;
-            ret.u = v1.u + (v2.u - v1.u) * t;
-            ret.v = v1.v + (v2.v - v1.v) * t;
+            ret.uv.u = v1.uv.u + (v2.uv.u - v1.uv.u) * t;
+            ret.uv.v = v1.uv.v + (v2.uv.v - v1.uv.v) * t;
             ret.normal = Vector.Interp(v1.normal, v2.normal, t);
             ret.color = MyColor.Interp(v1.color, v2.color, t);
             ret.WorldPos = Vector.Interp(v1.WorldPos, v2.WorldPos, t);
@@ -75,8 +78,8 @@ namespace WindowsFormsApp1
         public Vertex Interp(Vertex offset, double t)
         {
             this.point = Vector.Interp(this.point, offset.point, t);
-            this.u = this.u + offset.u * t;
-            this.v = this.v + offset.v * t;
+            this.uv.u = this.uv.u + offset.uv.u * t;
+            this.uv.v = this.uv.v + offset.uv.v * t;
             this.normal = Vector.Interp(this.normal, offset.normal, t);
             this.color = MyColor.Interp(this.color, offset.color, t);
             this.WorldPos = Vector.Interp(this.WorldPos, offset.WorldPos, t);
@@ -92,8 +95,8 @@ namespace WindowsFormsApp1
         {
             this.point += step.point;
             this.point.t += step.point.t;
-            this.u += step.u;
-            this.v += step.v;
+            this.uv.u += step.uv.u;
+            this.uv.v += step.uv.v;
             this.normal += step.normal;
             this.color += step.color;
             this.WorldPos += step.WorldPos;

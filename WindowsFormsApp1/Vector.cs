@@ -9,7 +9,7 @@ namespace WindowsFormsApp1
     class Vector
     {
         public double x, y, z, t;
-
+        
         public Vector()
         {
             this.x = 0;
@@ -17,6 +17,7 @@ namespace WindowsFormsApp1
             this.z = 0;
             this.t = 1;
         }
+        
         public Vector(double x, double y, double z, double t)
         {
             this.x = x;
@@ -72,7 +73,6 @@ namespace WindowsFormsApp1
             //ret.t = 0;
             return ret;
         }
-
         public double Length()
         {
             return Math.Sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
@@ -128,6 +128,12 @@ namespace WindowsFormsApp1
             return ret;
         }
         
+        public void Scale(double t)
+        {
+            this.x *= t;
+            this.y *= t;
+            this.z *= t;
+        }
 
         /// <summary>
         /// Inverse x y z

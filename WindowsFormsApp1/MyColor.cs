@@ -10,18 +10,19 @@ namespace WindowsFormsApp1
     class MyColor
     {
         public double r, g, b;
-        public MyColor()
-        {
-            this.r = 0;
-            this.g = 0;
-            this.b = 0;
-        }
         /// <summary>
         /// better between 0-1
         /// </summary>
         /// <param name="r"></param>
         /// <param name="g"></param>
         /// <param name="b"></param>
+        public MyColor()
+        {
+            this.r = 0;
+            this.g = 0;
+            this.b = 0;
+        }
+
         public MyColor(double r,double g,double b)
         {
             this.r = r;
@@ -41,9 +42,6 @@ namespace WindowsFormsApp1
             this.b *= t;
             return this;
         }
-        
-        
-
         public static MyColor Interp(MyColor m1, MyColor m2,double t)
         {
             MyColor ret = new MyColor();
@@ -77,14 +75,10 @@ namespace WindowsFormsApp1
             ret.b = a.b * b.b;
             return ret;
         }
-
         public static MyColor operator *(double t, MyColor c)
         {
             return c * t;
         }
-        
-
-
         public Color ConvertToColor()
         {
             /*

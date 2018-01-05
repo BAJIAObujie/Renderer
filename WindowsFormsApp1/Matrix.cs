@@ -10,8 +10,6 @@ namespace WindowsFormsApp1
     {
         private double[,] MyMatrix;
 
-
-
         /// <summary>
         /// 初始化矩阵函数,初始化为0
         /// </summary>

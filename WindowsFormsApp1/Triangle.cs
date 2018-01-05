@@ -9,16 +9,17 @@ namespace WindowsFormsApp1
     class Triangle
     {
         public Vector normal;
-        public int p0index, p1index, p2index;
+        public FaceUnit p0index, p1index, p2index;
 
         /// <summary>
         /// 默认三角面构造方法 000 点集null
         /// </summary>
+        /// 
         public Triangle()
         {
-            this.p0index = 0;
-            this.p1index = 0;
-            this.p2index = 0;
+            this.p0index = new FaceUnit();
+            this.p1index = new FaceUnit();
+            this.p2index = new FaceUnit();
             this.normal = new Vector();
         }
 
@@ -28,7 +29,7 @@ namespace WindowsFormsApp1
         /// <param name="p0index"></param>
         /// <param name="p1index"></param>
         /// <param name="p2index"></param>
-        public Triangle(int p0index, int p1index, int p2index)
+        public Triangle(FaceUnit p0index, FaceUnit p1index, FaceUnit p2index)
         {
             this.p0index = p0index;
             this.p1index = p1index;
@@ -36,7 +37,7 @@ namespace WindowsFormsApp1
             this.normal = new Vector();
         }
 
-        public Triangle(int p0index, int p1index, int p2index,Vector normal)
+        public Triangle(FaceUnit p0index, FaceUnit p1index, FaceUnit p2index, Vector normal)
         {
             this.p0index = p0index;
             this.p1index = p1index;

@@ -15,39 +15,55 @@ namespace WindowsFormsApp1
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static void TranslateToTriangle(Mesh mesh)
+        public static void PolygonToTriangle(Mesh mesh)
         {
-            mesh.trianglefaces = new List<Triangle>();
-            for (int i = 0; i < mesh.shownfaces.Count; i++)
+            mesh.TriangleFaces = new List<Triangle>(mesh.Faces.Count * 2);
+            for (int i = 0; i < mesh.Faces.Count; i++)
             {
-                mesh.trianglefaces.Add(new Triangle(mesh.shownfaces[i].p0index,
-                    mesh.shownfaces[i].p1index,
-                    mesh.shownfaces[i].p2index,
-                    mesh.shownfaces[i].normal
+                if(mesh.Faces[i].Count == 3)
+                {
+                    //还没有确定obj格式读取的法线是怎么回事.
+                    /*
+                    mesh.TriangleFaces.Add(new Triangle(mesh.Faces[i].p0index,
+                    mesh.Faces[i].p1index,
+                    mesh.Faces[i].p2index,
+                    mesh.Faces[i].normal
+                    ));*/
+                    mesh.TriangleFaces.Add(new Triangle(mesh.Faces[i].p0index,
+                    mesh.Faces[i].p1index,
+                    mesh.Faces[i].p2index
                     ));
-                mesh.trianglefaces.Add(new Triangle(mesh.shownfaces[i].p0index,
-                    mesh.shownfaces[i].p2index,
-                    mesh.shownfaces[i].p3index,
-                    mesh.shownfaces[i].normal
+                }
+                else if(mesh.Faces[i].Count == 4)
+                {
+                    mesh.TriangleFaces.Add(new Triangle(mesh.Faces[i].p0index,
+                    mesh.Faces[i].p1index,
+                    mesh.Faces[i].p2index
                     ));
+                    mesh.TriangleFaces.Add(new Triangle(mesh.Faces[i].p0index,
+                    mesh.Faces[i].p2index,
+                    mesh.Faces[i].p3index
+                    ));
+                }
+                else {
+                    throw new Exception("this model contain polygons whose Count excel 4");
+                }
             }
         }
 
-        
         public static void HidenFacesDemolish(Mesh mesh,Vector camera)
         {
-            mesh.shownfaces = new List<Polygon>();
-            for(int i = 0; i < mesh.faces.Count; i++)
+            mesh.ShownFaces = new List<Polygon>(mesh.Faces.Count);
+            for(int i = 0; i < mesh.Faces.Count; i++)
             {
-                if(Vector.DotMultiply(mesh.faces[i].normal, camera) <= -double.Epsilon)
+                if(Vector.DotMultiply(mesh.Faces[i].normal, camera) <= -double.Epsilon)
                 {
-                    mesh.shownfaces.Add(mesh.faces[i]);
+                    mesh.ShownFaces.Add(mesh.Faces[i]);
                 }
             }
 
         }
         
-
         //这个不行
         /// <summary>
         /// 顶点坐标系变换算法 vector = offset 
@@ -82,14 +98,13 @@ namespace WindowsFormsApp1
             mat3[0, 1] = -mat[1, 0];
             mat3[2, 2] = 1;
             //Matrix mat4 = offset * mat1 * mat2 * mat3;
-            for (int i = 0; i < mesh.vertices.Count; i++)
+            for (int i = 0; i < mesh.Vectors.Count; i++)
             {
-                mesh.vertices[i].point = mesh.vertices[i].point * offset * mat1 * mat2 * mat3;
+                mesh.Vectors[i] = mesh.Vectors[i] * offset * mat1 * mat2 * mat3;
                 //mesh.vertices[i] = mesh.vertices[i] * mat4;
             }
 
         }
-
 
         public static void RotateYAroundPoint(Mesh mesh, Vector point, double theta)
         {
@@ -100,10 +115,10 @@ namespace WindowsFormsApp1
             rotate[0, 0] = rotate[2, 2] = AngleCos;
             rotate[0, 2] = rotate[2, 0] = AngleSin;
             rotate[0, 2] = -rotate[0, 2];
-            for (int i = 0; i < mesh.vertices.Count; i++)
+            for (int i = 0; i < mesh.Vectors.Count; i++)
             {
-                Vector vec = mesh.vertices[i].point - point;
-                mesh.vertices[i].point = vec * rotate;
+                Vector vec = mesh.Vectors[i] - point;
+                mesh.Vectors[i] = vec * rotate;
             }
         }
         /// <summary>
@@ -112,13 +127,13 @@ namespace WindowsFormsApp1
         /// <returns></returns>
         public static void GetNormalFromFaces(Mesh mesh)
         {
-            for (int i = 0; i < mesh.faces.Count; i++)
+            for (int i = 0; i < mesh.Faces.Count; i++)
             {
-                Vector vector1 = mesh.vertices[mesh.faces[i].p1index].point
-                    - mesh.vertices[mesh.faces[i].p0index].point;
-                Vector vector2 = mesh.vertices[mesh.faces[i].p2index].point
-                    - mesh.vertices[mesh.faces[i].p1index].point;
-                mesh.faces[i].normal = Vector.CrossMultiply(vector1, vector2).NormalizedVector();
+                Vector vector1 = mesh.Vectors[mesh.Faces[i].p1index.IndexVertex]
+                    - mesh.Vectors[mesh.Faces[i].p0index.IndexVertex];
+                Vector vector2 = mesh.Vectors[mesh.Faces[i].p2index.IndexVertex]
+                    - mesh.Vectors[mesh.Faces[i].p1index.IndexVertex];
+                mesh.Faces[i].SetNormal(Vector.CrossMultiply(vector1, vector2).NormalizedVector()) ;
             }
         }
 
@@ -129,19 +144,35 @@ namespace WindowsFormsApp1
         }
         private static void GetVerticesNormal_1(Mesh mesh)
         {
-            for (int i = 0; i < mesh.faces.Count; i++)
+            /*  //之前是用输入顶点三维位置和面索引，直接组成一个顶点 然后计算法向量等 逐个给顶点增加信息。现在使用obj格式读取，法线等信息都有。似乎渲染流水线也没有这个步骤了
+            for (int i = 0; i < mesh.Faces.Count; i++)
             {
-                mesh.vertices[mesh.faces[i].p0index].normal += mesh.faces[i].normal;
-                mesh.vertices[mesh.faces[i].p1index].normal += mesh.faces[i].normal;
-                mesh.vertices[mesh.faces[i].p2index].normal += mesh.faces[i].normal;
-                mesh.vertices[mesh.faces[i].p3index].normal += mesh.faces[i].normal;
+                if (mesh.Faces[i].Count == 3)
+                {
+                    mesh.Vectors[mesh.Faces[i].p0index.IndexVertex].normal += mesh.Faces[i].normal;
+                    mesh.Vectors[mesh.Faces[i].p1index].normal += mesh.Faces[i].normal;
+                    mesh.Vectors[mesh.Faces[i].p2index].normal += mesh.Faces[i].normal;
+                }
+                else if (mesh.Faces[i].Count == 4)
+                {
+                    mesh.Vectors[mesh.Faces[i].p0index].normal += mesh.Faces[i].normal;
+                    mesh.Vectors[mesh.Faces[i].p1index].normal += mesh.Faces[i].normal;
+                    mesh.Vectors[mesh.Faces[i].p2index].normal += mesh.Faces[i].normal;
+                    mesh.Vectors[mesh.Faces[i].p3index].normal += mesh.Faces[i].normal;
+                }
+                else
+                {
+                    //面的点数超过4
+                }
+                
             }
+            */
         }
         private static void GetVerticesNormal_2(Mesh mesh)
         {
-            for (int i = 0; i < mesh.vertices.Count; i++)
+            for (int i = 0; i < mesh.Normals.Count; i++)
             {
-                mesh.vertices[i].normal.NormalizedVector();
+                mesh.Normals[i].NormalizedVector();
             }
         }
 
@@ -233,9 +264,6 @@ namespace WindowsFormsApp1
             return ret;
         }
 
-        
-
-        
         public static double MaxNumber(double one,double two)
         {
             return (one > two ? one : two); 
@@ -266,7 +294,6 @@ namespace WindowsFormsApp1
         {
             //----------------------所有颜色统一在0-1内计算----------------返回mycolor时，在回到0-255
             //材质 光照 暂时写在这边 完成光照模型后，写在外部
-
             //MyColor Ambient = new MyColor(0, 0, 0);  //环境光 可以不和下面两个一样
             MyColor Ambient = new MyColor(0.1, 0.1, 0.1);
             //MyColor Diffuse = new MyColor(0, 0, 0);
@@ -285,9 +312,9 @@ namespace WindowsFormsApp1
             }
             else
             {
-                texture.r = 1.0;
-                texture.g = 1.0;
-                texture.b = 1.0;
+                texture.r = 0.5;
+                texture.g = 0.5;
+                texture.b = 0.5;
             }
             if (IsPointLighting)
             {
@@ -334,10 +361,6 @@ namespace WindowsFormsApp1
 
 
         }
-
-
-
-
 
     }
     }

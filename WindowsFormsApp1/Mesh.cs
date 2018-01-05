@@ -8,79 +8,72 @@ namespace WindowsFormsApp1
 {
     class Mesh
     {
-        public List<Vertex> vertices;  //顶点集合    一般来说顶点的个数大于面的面数
-        public List<Polygon> faces;   //面的集合
-        public List<Polygon> shownfaces; //去除消隐的面
-        public List<Triangle> trianglefaces;  //要显示的三角形的集合
+        public List<Vector> Vectors;  //顶点位置的集合
+        public List<Polygon> Faces;   //面的集合
+        public List<Polygon> ShownFaces; //去除消隐的面
+        public List<Triangle> TriangleFaces;  //要显示的三角形的集合
 
-        public Vector CubeCenter;
+        public List<UV> UVs;
+        public List<Vector> Normals;
+
+        //public Vector CubeCenter;
         /// <summary>
-        /// 在调用之前必须先初始化第二个参数 faces 先得出所有面的信息 根据你的模型来设定三角面
+        /// 调用此方法则默认生成一个cube
         /// </summary>
         /// <param name="vertices"></param>
         /// <param name="faces"></param>
         public Mesh()
         {
-            this.vertices = new List<Vertex>(8)
+            this.Vectors = new List<Vector>(8)
             {
-                new Vertex(0.0,      0.0,      0.0,        1.0    ,1         ,1       ),    // x0
-                new Vertex(100.0,    0.0,      0.0 ,       1.0    ,0         ,0       ),    // x1   
-                new Vertex(0.0,      0.0,      100.0 ,     1.0    ,0         ,0       ),    // x2 
-                new Vertex(100.0,    0.0,      100.0,      1.0    ,1         ,0       ),    // x3   
-                new Vertex(0.0,      100.0,    0.0,        1.0    ,0         ,0       ),    // x4
-                new Vertex(100.0,    100.0,    0.0,        1.0    ,0         ,1       ),    // x5   
-                new Vertex(0.0,      100.0,    100.0,      1.0    ,1         ,0       ),    // x6 
-                new Vertex(100.0,    100.0,    100.0,      1.0    ,1         ,1       )     // x7   
+                new Vector(0.0,      0.0,      0.0,        1.0),    // x0
+                new Vector(100.0,    0.0,      0.0 ,       1.0),    // x1   
+                new Vector(0.0,      0.0,      100.0 ,     1.0),    // x2 
+                new Vector(100.0,    0.0,      100.0,      1.0),    // x3   
+                new Vector(0.0,      100.0,    0.0,        1.0),    // x4
+                new Vector(100.0,    100.0,    0.0,        1.0),    // x5   
+                new Vector(0.0,      100.0,    100.0,      1.0),    // x6 
+                new Vector(100.0,    100.0,    100.0,      1.0)     // x7   
 
             };
-            this.faces = new List<Polygon>(1)
+            this.Faces = new List<Polygon>(1)
             {
              //改为以左手为准，左手坐标系
+             /*
                 new Polygon(1,5,7,3),
                 new Polygon(3,7,6,2),
                 new Polygon(5,4,6,7),
                 new Polygon(1,0,4,5),
                 new Polygon(0,1,3,2),
                 new Polygon(0,2,6,4),
+                */
             };
-            init();
-            
-            CubeCenter = (this.vertices[0].point + this.vertices[7].point)/2;
+            Scale(1.5);
+            //CubeCenter = (this.Vertices[0].point + this.Vertices[7].point)/2;
+            Move(new Vector(-50, -50, -50, 1));
         }
-        private void init()
+        public void Scale(double mul)
         {
-            double mul = 1.5;
-            for (int i = 0; i < this.vertices.Count; i++)
+            for (int i = 0; i < this.Vectors.Count; i++)
             {
-                this.vertices[i].point.x *= mul;
-                this.vertices[i].point.y *= mul;
-                this.vertices[i].point.z *= mul;
-                this.vertices[i].WorldPos.x *= mul;
-                this.vertices[i].WorldPos.y *= mul;
-                this.vertices[i].WorldPos.z *= mul;
-            }
-            
-            for (int i = 0; i < this.vertices.Count; i++)
-            {
-                this.vertices[i].point.x -= 50;
-                this.vertices[i].point.y -= 50;
-                this.vertices[i].point.z -= 50;
-                this.vertices[i].WorldPos.x -= 50;
-                this.vertices[i].WorldPos.y -= 50;
-                this.vertices[i].WorldPos.z -= 50;
-            }
-
-
+                this.Vectors[i].Scale(mul);
+            } 
         }
         public void Move(Vector m)
         {
-            for (int i = 0; i < this.vertices.Count; i++)
+            for (int i = 0; i < this.Vectors.Count; i++)
             {
-                this.vertices[i].point.y += m.y;
-                this.vertices[i].point.z += m.z;
-                this.vertices[i].WorldPos.y += m.y;
-                this.vertices[i].WorldPos.z += m.z;
+                this.Vectors[i] += m;
             }
+        }
+        //--------------OBJReader-----------------
+        /// <summary>
+        /// 调用此方法则是调用外部obj模型文件
+        /// </summary>
+        /// <param name="IsOBJReader"></param>
+        public Mesh(bool IsOBJReader)
+        {
+            //模块写得太差劲了！
         }
 
 

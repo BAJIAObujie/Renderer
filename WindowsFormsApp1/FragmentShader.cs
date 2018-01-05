@@ -17,7 +17,7 @@ namespace WindowsFormsApp1
             this.WorldNormal = new Vector(WorldNormal);
             this.WorldPos = new Vector(WorldPos);
             this.eye = new Vector(eye);
-            
         }
+        
     }
 }
