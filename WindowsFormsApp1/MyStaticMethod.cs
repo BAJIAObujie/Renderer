@@ -119,6 +119,12 @@ namespace WindowsFormsApp1
             {
                 Vector vec = mesh.Vectors[i] - point;
                 mesh.Vectors[i] = vec * rotate;
+
+                
+            }
+            for(int i = 0; i < mesh.Normals.Count; i++)
+            {
+                mesh.Normals[i] = (mesh.Normals[i] * rotate).NormalizedVector();
             }
         }
         /// <summary>
@@ -281,87 +287,10 @@ namespace WindowsFormsApp1
             v2 = temp;
         }
 
-        public static Light PointLight = new Light(new Vector(350, 350, -50, 1), new MyColor(1, 1, 1));
-        public static MyColor EnvironmentLight = new MyColor(0.2, 0.2, 0.2);
-
-        /// <summary>
-        /// FragmentShader是结构体 值类型，MyColor是类类型，引用类型
-        /// </summary>
-        /// <param name="FS"></param>
-        /// <param name="mycolor"></param>
-        /// <returns></returns>
-        public static MyColor LightMode_BlinnPhong(FragmentShader FS, MyColor mycolor, bool IsTexture, bool IsPointLighting)
-        {
-            //----------------------所有颜色统一在0-1内计算----------------返回mycolor时，在回到0-255
-            //材质 光照 暂时写在这边 完成光照模型后，写在外部
-            //MyColor Ambient = new MyColor(0, 0, 0);  //环境光 可以不和下面两个一样
-            MyColor Ambient = new MyColor(0.1, 0.1, 0.1);
-            //MyColor Diffuse = new MyColor(0, 0, 0);
-            MyColor Diffuse = new MyColor(0.2, 0.2, 0.2);
-            //MyColor Specular = new MyColor(0, 0, 0);
-            MyColor Specular = new MyColor(0.5, 0.5, 0.5);
-            Material material = new Material(Ambient, Diffuse, Specular);
-
-           
-
-            //读取纹理的颜色  先假设为mycolor
-            MyColor texture = new MyColor();
-            if (IsTexture)
-            {
-                texture = new MyColor(mycolor).Scale(1.0 / 255);
-            }
-            else
-            {
-                texture.r = 0.5;
-                texture.g = 0.5;
-                texture.b = 0.5;
-            }
-            if (IsPointLighting)
-            {
-                Vector normal = new Vector(FS.WorldNormal);
-                Vector ViewDir = FS.eye - FS.WorldPos;
-                ViewDir.NormalizedVector();
-
-                Vector LightDir = PointLight.LightPos - FS.WorldPos;
-                double distance = LightDir.Length();//光源与渲染点的距离
-                LightDir.NormalizedVector();
-
-                //----衰减计算----
-                double constant = 1;
-                double linear = 0.009;
-                double quadratic = 0.00032;
-                double num = constant + linear * distance + quadratic * (distance * distance);
-                double attenuation = 0;
-                if (num != 0) attenuation = 1.0 / num;
-                attenuation = MinNumber(attenuation, 0);
-
-                MyColor LightA = texture * ((PointLight.LightColor + EnvironmentLight) * material.Ambient);
-
-                //漫反射系数计算
-                double diff = MaxNumber(Vector.DotMultiply(normal, LightDir), 0);
-                MyColor LightD = texture * (PointLight.LightColor * material.Diffuse) * diff;
-
-                //反射计算 blinn-phong
-                Vector H = (LightDir + ViewDir).NormalizedVector();
-                double shininess = 2;//镜面反射系数
-                double reflect = Math.Pow(MaxNumber(Vector.DotMultiply(H, normal), 0), shininess);
-                MyColor LightS = texture * PointLight.LightColor * material.Specular * reflect;
-
-                MyColor ret = LightA + (LightD + LightS);
-                //MyColor ret = LightA + (LightD + LightS) * attenuation;
-                ret.Scale(255.0);
-                return ret;
-            }
-            else
-            {
-                MyColor ret = texture.Scale(255.0);
-                return ret;
-            }
-
 
 
         }
 
     }
-    }
+    
 

@@ -56,6 +56,7 @@ namespace WindowsFormsApp1
             this.CheckBox_IsPointLight = new System.Windows.Forms.CheckBox();
             this.Button_CameraMove = new System.Windows.Forms.Button();
             this.EnvironmentLight = new System.Windows.Forms.Label();
+            this.CheckBox_IsShaded = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnvironmentLightScroll)).BeginInit();
             this.SuspendLayout();
@@ -86,7 +87,7 @@ namespace WindowsFormsApp1
             // CheckBox_IsTriangleWireFrame
             // 
             this.CheckBox_IsTriangleWireFrame.AutoSize = true;
-            this.CheckBox_IsTriangleWireFrame.Location = new System.Drawing.Point(12, 123);
+            this.CheckBox_IsTriangleWireFrame.Location = new System.Drawing.Point(13, 129);
             this.CheckBox_IsTriangleWireFrame.Name = "CheckBox_IsTriangleWireFrame";
             this.CheckBox_IsTriangleWireFrame.Size = new System.Drawing.Size(138, 16);
             this.CheckBox_IsTriangleWireFrame.TabIndex = 8;
@@ -97,7 +98,7 @@ namespace WindowsFormsApp1
             // CheckBox_IsRectWireFrame
             // 
             this.CheckBox_IsRectWireFrame.AutoSize = true;
-            this.CheckBox_IsRectWireFrame.Location = new System.Drawing.Point(11, 161);
+            this.CheckBox_IsRectWireFrame.Location = new System.Drawing.Point(12, 167);
             this.CheckBox_IsRectWireFrame.Name = "CheckBox_IsRectWireFrame";
             this.CheckBox_IsRectWireFrame.Size = new System.Drawing.Size(114, 16);
             this.CheckBox_IsRectWireFrame.TabIndex = 9;
@@ -108,7 +109,9 @@ namespace WindowsFormsApp1
             // CheckBox_IsTexture
             // 
             this.CheckBox_IsTexture.AutoSize = true;
-            this.CheckBox_IsTexture.Location = new System.Drawing.Point(11, 198);
+            this.CheckBox_IsTexture.Checked = true;
+            this.CheckBox_IsTexture.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CheckBox_IsTexture.Location = new System.Drawing.Point(13, 233);
             this.CheckBox_IsTexture.Name = "CheckBox_IsTexture";
             this.CheckBox_IsTexture.Size = new System.Drawing.Size(78, 16);
             this.CheckBox_IsTexture.TabIndex = 10;
@@ -119,7 +122,9 @@ namespace WindowsFormsApp1
             // CheckBox_IsLighting
             // 
             this.CheckBox_IsLighting.AutoSize = true;
-            this.CheckBox_IsLighting.Location = new System.Drawing.Point(11, 237);
+            this.CheckBox_IsLighting.Checked = true;
+            this.CheckBox_IsLighting.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CheckBox_IsLighting.Location = new System.Drawing.Point(13, 272);
             this.CheckBox_IsLighting.Name = "CheckBox_IsLighting";
             this.CheckBox_IsLighting.Size = new System.Drawing.Size(114, 16);
             this.CheckBox_IsLighting.TabIndex = 11;
@@ -129,7 +134,7 @@ namespace WindowsFormsApp1
             // 
             // EnvironmentLightScroll
             // 
-            this.EnvironmentLightScroll.Location = new System.Drawing.Point(11, 295);
+            this.EnvironmentLightScroll.Location = new System.Drawing.Point(13, 330);
             this.EnvironmentLightScroll.Maximum = 100;
             this.EnvironmentLightScroll.Name = "EnvironmentLightScroll";
             this.EnvironmentLightScroll.Size = new System.Drawing.Size(104, 45);
@@ -139,7 +144,9 @@ namespace WindowsFormsApp1
             // CheckBox_IsEye
             // 
             this.CheckBox_IsEye.AutoSize = true;
-            this.CheckBox_IsEye.Location = new System.Drawing.Point(11, 346);
+            this.CheckBox_IsEye.Checked = true;
+            this.CheckBox_IsEye.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CheckBox_IsEye.Location = new System.Drawing.Point(13, 381);
             this.CheckBox_IsEye.Name = "CheckBox_IsEye";
             this.CheckBox_IsEye.Size = new System.Drawing.Size(72, 16);
             this.CheckBox_IsEye.TabIndex = 13;
@@ -150,7 +157,7 @@ namespace WindowsFormsApp1
             // CheckBox_IsLookat
             // 
             this.CheckBox_IsLookat.AutoSize = true;
-            this.CheckBox_IsLookat.Location = new System.Drawing.Point(11, 381);
+            this.CheckBox_IsLookat.Location = new System.Drawing.Point(13, 416);
             this.CheckBox_IsLookat.Name = "CheckBox_IsLookat";
             this.CheckBox_IsLookat.Size = new System.Drawing.Size(60, 16);
             this.CheckBox_IsLookat.TabIndex = 14;
@@ -161,7 +168,7 @@ namespace WindowsFormsApp1
             // CheckBox_IsPointLight
             // 
             this.CheckBox_IsPointLight.AutoSize = true;
-            this.CheckBox_IsPointLight.Location = new System.Drawing.Point(11, 417);
+            this.CheckBox_IsPointLight.Location = new System.Drawing.Point(13, 452);
             this.CheckBox_IsPointLight.Name = "CheckBox_IsPointLight";
             this.CheckBox_IsPointLight.Size = new System.Drawing.Size(96, 16);
             this.CheckBox_IsPointLight.TabIndex = 15;
@@ -172,28 +179,42 @@ namespace WindowsFormsApp1
             // Button_CameraMove
             // 
             this.Button_CameraMove.Font = new System.Drawing.Font("微软雅黑", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Button_CameraMove.Location = new System.Drawing.Point(12, 62);
+            this.Button_CameraMove.Location = new System.Drawing.Point(13, 68);
             this.Button_CameraMove.Name = "Button_CameraMove";
             this.Button_CameraMove.Size = new System.Drawing.Size(152, 37);
             this.Button_CameraMove.TabIndex = 7;
-            this.Button_CameraMove.Text = "CameraMove";
+            this.Button_CameraMove.Text = "ModelMove";
             this.Button_CameraMove.UseVisualStyleBackColor = true;
             this.Button_CameraMove.Click += new System.EventHandler(this.Button_CameraMove_Click);
             // 
             // EnvironmentLight
             // 
             this.EnvironmentLight.AutoSize = true;
-            this.EnvironmentLight.Location = new System.Drawing.Point(14, 280);
+            this.EnvironmentLight.Location = new System.Drawing.Point(16, 315);
             this.EnvironmentLight.Name = "EnvironmentLight";
             this.EnvironmentLight.Size = new System.Drawing.Size(101, 12);
             this.EnvironmentLight.TabIndex = 16;
             this.EnvironmentLight.Text = "EnvironmentLight";
+            // 
+            // CheckBox_IsShaded
+            // 
+            this.CheckBox_IsShaded.AutoSize = true;
+            this.CheckBox_IsShaded.Checked = true;
+            this.CheckBox_IsShaded.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CheckBox_IsShaded.Location = new System.Drawing.Point(12, 201);
+            this.CheckBox_IsShaded.Name = "CheckBox_IsShaded";
+            this.CheckBox_IsShaded.Size = new System.Drawing.Size(72, 16);
+            this.CheckBox_IsShaded.TabIndex = 17;
+            this.CheckBox_IsShaded.Text = "IsShaded";
+            this.CheckBox_IsShaded.UseVisualStyleBackColor = true;
+            this.CheckBox_IsShaded.CheckedChanged += new System.EventHandler(this.CheckBox_IsShaded_CheckedChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1134, 575);
+            this.Controls.Add(this.CheckBox_IsShaded);
             this.Controls.Add(this.EnvironmentLight);
             this.Controls.Add(this.CheckBox_IsPointLight);
             this.Controls.Add(this.CheckBox_IsLookat);
@@ -231,6 +252,7 @@ namespace WindowsFormsApp1
         private CheckBox CheckBox_IsPointLight;
         private Button Button_CameraMove;
         private Label EnvironmentLight;
+        private CheckBox CheckBox_IsShaded;
     }
 }
 

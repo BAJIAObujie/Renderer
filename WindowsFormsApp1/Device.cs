@@ -27,9 +27,11 @@ namespace WindowsFormsApp1
         private Matrix Projection;
         //private Matrix Transform;
         public Camera MyCamera;
+        public Light MyLight;
 
         //-----纹理部分-----
         public string TexturePath;
+        public string ObjPath;
         public int TextureWidth;
         public int TextureHeight;
         public MyColor[,] TextureImage;
@@ -49,36 +51,35 @@ namespace WindowsFormsApp1
         }
         private void InitializedInfo()
         {
+            IsShaded = true;
+            IsEye = true;
+            IsTexture = true;
+            IsPointLighting = true;
+            
+
             this.BitMapWidth = 720;
             this.BitMapHeight = 480;
 
             this.MyCamera = new Camera();
-            TexturePath = @"C:\Users\ZL0032\Desktop\Document\Journey.jpg";
-
+            this.TexturePath = @"C:\Users\ZL0032\Desktop\Document\Journey.jpg";
+            this.ObjPath = @"C: \Users\ZL0032\Desktop\girl\girl.obj";
+            
             //------------初始化顶点、面数据-----------
-            //OBJReader o = new OBJReader(@"C:\Users\ZL0032\Desktop\98k obj\98K.obj");
-            //OBJReader o = new OBJReader(@"C:\Users\ZL0032\Desktop\98k obj\cube.obj");
-            OBJReader o = new OBJReader(@"C: \Users\ZL0032\Desktop\girl\girl.obj");
-            this.mesh = o.mesh;
-  
+            LoadObj();
+
+            //--------------光源信息---------------
+            MyLight = new Light(new Vector(100, 0, 0, 1), new MyColor(1, 1, 1));
+            //MyLight = new Light(new Vector(0, 0, 100, 1), new MyColor(1, 1, 1));
+            Light.EnvironmentLight = new MyColor(0.5, 0.5, 0.5);
+
             DepthBuffer = new double[BitMapHeight, BitMapWidth];
             ClearDepthBuffer();
 
             //this.IsRectWireFrame = true;
             //this.IsTriangleWireFrame = true;
             //this.IsPointLighting = true;
-            IsShaded = true;
-            IsTexture = true;
-            IsPointLighting = true;
-
+            
             LoadTexture();
-
-            /*
-            this.pictureBox1.Height = (int)(this.Height * 0.8);
-            this.pictureBox1.Width = (int)(this.Width * 0.8);
-            this.pictureBox1.Location = new Point(150 + (this.Width - this.BitMapWidth) / 4,
-                                                   (this.Height - this.BitMapHeight) / 4);
-                                                   */
             this.MyBitMap = new Bitmap(this.BitMapWidth, this.BitMapHeight);
         }
 
@@ -122,7 +123,8 @@ namespace WindowsFormsApp1
         private void DrawModel(List<Vector> Vectors, List<Polygon> Faces, List<Vector> Normals, List<UV> UVs)
         {
             for (int i = 0; i < Faces.Count; i++)
-            {
+            //for (int i = 0; i < 2; i++)
+                {
                 if(Faces[i].Count == 4)
                 {
                     Vertex v0 = new Vertex();
@@ -531,10 +533,10 @@ namespace WindowsFormsApp1
                         MyColor mycolor = ReadTexture(u, v); //根据uv读取颜色   非立方体纹理映射
                         //MyColor mycolor = CubeMap(scanline.leftvertex.WorldPos, this.mesh.CubeCenter);
 
-                        FragmentShader FS = new FragmentShader(scanline.leftvertex.WorldPos,
+                        a2v FS = new a2v(scanline.leftvertex.WorldPos,
                                                                scanline.leftvertex.normal,
                                                                this.MyCamera.eye);
-                        mycolor = MyStaticMethod.LightMode_BlinnPhong(FS, mycolor, IsTexture, IsPointLighting);
+                        mycolor = Light.LightMode_BlinnPhong(FS, mycolor, IsTexture, IsPointLighting, MyLight);
 
                         Color color = mycolor.ConvertToColor();
                         MyBitMap.SetPixel(x, scanline.y, color);  //设置对应像素点颜色
@@ -567,6 +569,21 @@ namespace WindowsFormsApp1
                     //getpixel是从左下角开始算先X后Y 纹理图是从右上角开始算，先行后列
                 }
             }
+        }
+        public void LoadObj()
+        {
+            //加载Obj模型
+            if (false)
+            {
+                OBJReader o = new OBJReader(this.ObjPath);
+                this.mesh = o.mesh;
+                MyStaticMethod.RotateYAroundPoint(this.mesh, new Vector(0, 0, 0, 1), -1.57);
+            }
+            
+            
+            //加载自定义cube模型
+            this.mesh = new Mesh();
+
         }
         public MyColor ReadTexture(double u, double v)
         {

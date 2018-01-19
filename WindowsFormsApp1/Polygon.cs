@@ -26,6 +26,11 @@ namespace WindowsFormsApp1
             this.p2index = new FaceUnit();
             this.p3index = new FaceUnit();
         }
+        public Polygon(int index0, int index1, int index2, int index3)
+        {
+            Count = 4;
+            this.p0index.IndexVertex = index0;
+        }
         
         public Polygon(FaceUnit p0index, FaceUnit p1index, FaceUnit p2index)
         {
@@ -70,5 +75,10 @@ namespace WindowsFormsApp1
     {
         public double u;
         public double v;
+        public UV(double u,double v)
+        {
+            this.u = u;
+            this.v = v;
+        }
     }
 }
