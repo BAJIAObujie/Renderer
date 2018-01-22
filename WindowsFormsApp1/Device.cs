@@ -65,7 +65,7 @@ namespace WindowsFormsApp1
             this.ObjPath = @"C: \Users\ZL0032\Desktop\girl\girl.obj";
             
             //------------初始化顶点、面数据-----------
-            LoadObj();
+            LoadObj(true);//加载测试用例cube为true 加载obj模型为false
 
             //--------------光源信息---------------
             MyLight = new Light(new Vector(100, 0, 0, 1), new MyColor(1, 1, 1));
@@ -570,20 +570,21 @@ namespace WindowsFormsApp1
                 }
             }
         }
-        public void LoadObj()
+        public void LoadObj(bool IsTest)
         {
-            //加载Obj模型
-            if (false)
+            //加载Obj模型 还在改善
+            if (IsTest)
+            {
+                this.mesh = new Mesh(IsTest);
+            }
+            //加载测试用例cube模型
+            else
             {
                 OBJReader o = new OBJReader(this.ObjPath);
                 this.mesh = o.mesh;
                 MyStaticMethod.RotateYAroundPoint(this.mesh, new Vector(0, 0, 0, 1), -1.57);
             }
             
-            
-            //加载自定义cube模型
-            this.mesh = new Mesh();
-
         }
         public MyColor ReadTexture(double u, double v)
         {

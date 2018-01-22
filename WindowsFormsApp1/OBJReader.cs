@@ -8,7 +8,7 @@ using System.IO;
 namespace WindowsFormsApp1
 {
     /// <summary>
-    /// 更新原本的Cube为范例模型。大规模重构整体框架,因为加入了obj读取器所以修改了很多函数
+    /// 更新原本的Cube为范例模型。重构部分框架,因为加入了obj读取器所以修改了很多函数
     /// </summary>
     class OBJReader
     {
@@ -26,7 +26,7 @@ namespace WindowsFormsApp1
             FaceCount = 0;
             NormalCount = 0;
             UVCount = 0;
-            mesh = new Mesh(true);
+            mesh = new Mesh();
             Array = new List<string>();
 
             if (!File.Exists(path)) throw new Exception("path is wrong");
@@ -155,6 +155,10 @@ namespace WindowsFormsApp1
         public void PostOperative()
         {
             this.mesh.Scale(1);
+        }
+        public Mesh GetMesh()
+        {
+            return this.mesh;
         }
     }
 }

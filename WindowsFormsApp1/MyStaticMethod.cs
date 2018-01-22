@@ -115,12 +115,12 @@ namespace WindowsFormsApp1
             rotate[0, 0] = rotate[2, 2] = AngleCos;
             rotate[0, 2] = rotate[2, 0] = AngleSin;
             rotate[0, 2] = -rotate[0, 2];
+
+            //旋转的同时需要旋转顶点位置以及法线向量，如果没有旋转法线向量在计算光照的时候出错。
             for (int i = 0; i < mesh.Vectors.Count; i++)
             {
                 Vector vec = mesh.Vectors[i] - point;
                 mesh.Vectors[i] = vec * rotate;
-
-                
             }
             for(int i = 0; i < mesh.Normals.Count; i++)
             {

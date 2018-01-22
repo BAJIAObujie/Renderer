@@ -16,24 +16,27 @@ namespace WindowsFormsApp1
         public List<UV> UVs;
         public List<Vector> Normals;
 
-        //public Vector CubeCenter;
+        public Mesh()
+        {
+
+        }
         /// <summary>
         /// 测试用例 正方形
         /// </summary>
         /// <param name="vertices"></param>
         /// <param name="faces"></param>
-        public Mesh()
+        public Mesh(bool IsTest)
         {
-
-            this.UVs = new List<UV>(4)
+            if (IsTest)
+            {
+                this.UVs = new List<UV>(4)
             {
                 new UV(0,0),
                 new UV(1,0),
                 new UV(0,1),
                 new UV(1,1)
             };
-
-            this.Normals = new List<Vector>(8)
+                this.Normals = new List<Vector>(8)
             {
                 /*
                 new Vector(-1, -1, -1, 1).NormalizedVector(),
@@ -52,8 +55,7 @@ namespace WindowsFormsApp1
                 new Vector(0, -1, 0, 1).NormalizedVector(),
                 new Vector(0, 0, -1, 1).NormalizedVector(),
             };
-
-            this.Vectors = new List<Vector>(8)
+                this.Vectors = new List<Vector>(8)
             {
                 new Vector(-50.0,      -50.0,      -50.0,        1.0),    // x0
                 new Vector(50.0,    -50.0,      -50.0 ,       1.0),    // x1   
@@ -65,7 +67,7 @@ namespace WindowsFormsApp1
                 new Vector(50.0,    50.0,    50.0,      1.0)     // x7   
 
             };
-            this.Faces = new List<Polygon>(1)
+                this.Faces = new List<Polygon>(1)
             {
                 new Polygon(new FaceUnit(1,0,0),new FaceUnit(5,1,0),new FaceUnit(7,2,0),new FaceUnit(3,3,0)),
                 new Polygon(new FaceUnit(3,0,2),new FaceUnit(7,1,2),new FaceUnit(6,2,2),new FaceUnit(2,3,2)),
@@ -83,9 +85,11 @@ namespace WindowsFormsApp1
                 */
                 
             };
-            //CubeCenter = (this.Vertices[0].point + this.Vertices[7].point)/2;
-            Scale(1);
+                //CubeCenter = (this.Vertices[0].point + this.Vertices[7].point)/2;
+                Scale(1);
+            }
         }
+
         public void Scale(double mul)
         {
             for (int i = 0; i < this.Vectors.Count; i++)
@@ -106,11 +110,15 @@ namespace WindowsFormsApp1
         /// 调用此方法则是调用外部obj模型文件
         /// </summary>
         /// <param name="IsOBJReader"></param>
-        public Mesh(bool IsOBJReader)
+        public static Mesh GetMeshFromOBJReader(String Path)
         {
-            
+            return new OBJReader(Path).GetMesh();
         }
-
+        /// <summary>
+        /// 从外部传入数据
+        /// </summary>
+        /// <param name="FromOutside"></param>
+        
 
 
     }
